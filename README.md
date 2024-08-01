@@ -2,9 +2,9 @@
 
 ## 😎 Description 🙏
 
-Maps a javascript objects to arbitrary create, update and delete functions.
+Maps javascript objects to arbitrary create, update and delete functions.
 
-Can be used to sync stateful or stateless components to some other provider of data.
+Can be used to sync stateful or stateless components with some other provider of data.
 
 ## 🚀 Installation 😱
 
@@ -23,7 +23,9 @@ const bar = () => ({
   delete: (absolute) => console.log("Delete", absolute),
 });
 
-const run = oneWayDataBindingLibraryJs({ "foo.bar": bar });
+const run = oneWayDataBindingLibraryJs({
+  "foo.bar": bar,
+});
 
 // Create
 run(() => ({ foo: { bar: { hello: "world" } } }));
