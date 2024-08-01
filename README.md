@@ -82,6 +82,34 @@ run(() => ({
 }));
 ```
 
+### Using Classes
+
+```js
+class Example {
+  create(relative, absolute) {
+    console.log("Create", relative, absolute);
+  }
+
+  update(relative, absolute) {
+    console.log("Update", relative, absolute);
+  }
+
+  delete(absolute) {
+    console.log("Delete", absolute);
+  }
+}
+
+const run = oneWayDataBindingLibraryJs({
+  "foo.bar": () => new Example(),
+});
+
+run(() => ({
+  foo: {
+    bar: {},
+  },
+}));
+```
+
 ## 👀 Help & Documentation 🎉
 
 ### Path Matching
