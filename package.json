@@ -1,0 +1,12 @@
+{
+  "name": "one-way-data-binding-library.mjs",
+  "version": "0.0.1",
+  "main": "one-way-data-binding-library.mjs",
+  "devDependencies": {
+    "vitest": "^2.0.4"
+  },
+  "dependencies": {
+    "immer": "^10.1.1",
+    "object-scan": "^19.0.5"
+  }
+}
