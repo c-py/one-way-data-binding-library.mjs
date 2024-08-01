@@ -32,7 +32,7 @@ export default (bindings) => {
 
     Object.keys(bound).forEach((key) => {
       if (!(key in nextBound) || nextBound[key] === undefined) {
-        bound[key].methods.delete?.();
+        bound[key].methods.delete?.(state);
       }
     });
 
