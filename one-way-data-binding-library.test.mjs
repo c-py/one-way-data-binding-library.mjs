@@ -273,4 +273,20 @@ describe("one-way-data-binding-library", () => {
 
     expect(runs).toBe(1);
   });
+
+  it("runs creates in list order", () => {
+    let order = [];
+
+    const foo = () => ({
+      create: (data) => order.push(data),
+    });
+
+    const run = bind({
+      "state.foo[*]": foo,
+    });
+
+    run(() => ({ state: { foo: [1, 2, 3] } }));
+
+    expect(order).toEqual([1, 2, 3]);
+  });
 });

@@ -12,8 +12,10 @@ export default (bindings) => {
 
     scan(Object.keys(bindings), {
       joined: true,
+      reverse: false,
       rtn: ["key", "value", "matchedBy"],
     })(state).forEach(([key, data, matchedBy]) => {
+      console.log(key);
       matchedBy.forEach((match) => {
         // No binding exists for this key; bind and call create method
         if (!(key in bound)) {
