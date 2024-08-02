@@ -12,6 +12,12 @@ Can be used to sync stateful or stateless components with some other provider of
 yarn add one-way-data-binding-library.mjs
 ```
 
+## 😏 Examples ❤️
+
+Canvas API, DOM API and React examples are available:
+
+[https://c-py.github.io/one-way-data-binding-library.mjs/](https://c-py.github.io/one-way-data-binding-library.mjs/)
+
 ## 💯 Basic Usage 👆
 
 ```js
