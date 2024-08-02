@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>one-way-data-binding-library.mjs</title>
+    <style>
+      .col {
+        display: flex;
+        flex-direction: column;
+      }
+      .row {
+        display: flex;
+        flex-direction: row;
+      }
+      pre {
+        font-size: 8px;
+      }
+      i {
+        font-size: 10px;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/styles/default.min.css"
+    />
+    <script type="importmap">
+      {
+        "imports": {
+          "one-way-data-binding-library.mjs": "https://cdn.jsdelivr.net/npm/one-way-data-binding-library.mjs/+esm"
+        }
+      }
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/styles/default.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+  </head>
+  <body>
+    <h1>one-way-data-binding-library.mjs</h1>
+    <div class="cols">
+      <div class="row">
+        <div>
+          <h2>Canvas API</h2>
+          <canvas id="canvas" width="200" height="200"></canvas>
+        </div>
+        <script type="module" id="canvas-script">
+          import bind from "one-way-data-binding-library.mjs";
+
+          const canvas = document.getElementById("canvas");
+          const context = canvas.getContext("2d");
+
+          // Setup Mappings
+          const run = bind({
+            "birds[*]": () => ({
+              update: (bird) => {
+                context.fillStyle = bird.color;
+                context.fillRect(bird.x, bird.y, 10, 10);
+              },
+            }),
+          });
+
+          const state = {
+            birds: [
+              { x: 0, y: 0, vx: 0, vy: 0, color: "red" },
+              { x: 0, y: 0, vx: 0, vy: 0, color: "green" },
+              { x: 0, y: 0, vx: 0, vy: 0, color: "blue" },
+            ],
+          };
+
+          // Create State
+          run(() => state);
+
+          const last = 0;
+          const loop = (now) => {
+            window.requestAnimationFrame(loop);
+
+            const dt = (now - last) / 1000;
+            if (dt < 1 / 60) return;
+
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Update State
+            run((state) => {
+              for (const bird of state.birds) {
+                bird.x += bird.vx;
+                bird.y += bird.vy;
+
+                if (bird.x <= 0) bird.vx = Math.random();
+                if (bird.x >= canvas.width) bird.vx = -Math.random();
+
+                if (bird.y <= 0) bird.vy = Math.random();
+                if (bird.y >= canvas.height) bird.vy = -Math.random();
+              }
+            });
+          };
+
+          window.requestAnimationFrame(loop);
+        </script>
+        <pre><code id="canvas-pre"></code></pre>
+        <script>
+          document.getElementById("canvas-pre").textContent =
+            document.getElementById("canvas-script").textContent;
+        </script>
+      </div>
+
+      <hr />
+
+      <div class="row">
+        <div>
+          <h2>DOM API</h2>
+          <div id="container" style="width: 200px"></div>
+          <div>
+            <button id="add">Add</button><button id="delete">Delete</button>
+          </div>
+        </div>
+        <script type="module" id="dom-script">
+          import bind from "one-way-data-binding-library.mjs";
+
+          // Setup Mappings
+          const run = bind({
+            "birds[*]": () => {
+              const container = document.getElementById("container");
+              const div = document.createElement("div");
+
+              return {
+                create: (bird) => {
+                  div.textContent = `Bird ${bird}`;
+                  container.append(div);
+                },
+
+                delete: () => container.removeChild(div),
+              };
+            },
+          });
+
+          const state = { birds: [1, 2, 3] };
+
+          // Create State
+          run(() => state);
+
+          document.getElementById("add").addEventListener("click", () => {
+            // Update State
+            run((state) => {
+              state.birds.push(state.birds.length + 1);
+            });
+          });
+
+          document.getElementById("delete").addEventListener("click", () => {
+            // Update State
+            run((state) => {
+              state.birds.pop();
+            });
+          });
+        </script>
+        <pre><code id="dom-pre"></code></pre>
+        <script>
+          document.getElementById("dom-pre").textContent =
+            document.getElementById("dom-script").textContent;
+        </script>
+      </div>
+
+      <hr />
+
+      <div class="row">
+        <div>
+          <i>Not Recommended. This code is hacky.</i>
+          <h2>React</h2>
+          <div id="react" style="width: 200px"></div>
+        </div>
+        <script src="https://unpkg.com/htm@2.2.1" crossorigin></script>
+        <script
+          src="https://unpkg.com/react@16/umd/react.production.min.js"
+          crossorigin
+        ></script>
+        <script
+          src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"
+          crossorigin
+        ></script>
+        <script type="module" id="react-script">
+          const { createElement, useState, useEffect } = React;
+          const html = htm.bind(createElement);
+
+          import bind from "one-way-data-binding-library.mjs";
+
+          const bindings = {};
+          const state = { birds: [1, 2, 3] };
+          const run = bind(bindings);
+
+          // Create State
+          run(() => state);
+
+          const addBird = () => {
+            // Update State
+            run((state) => {
+              state.birds.push(state.birds.length + 1);
+            });
+          };
+
+          const removeBird = () => {
+            // Update State
+            run((state) => {
+              state.birds.pop();
+            });
+          };
+
+          const List = () => {
+            const [birds, setBirds] = useState([]);
+
+            useEffect(() => {
+              // Setup Mappings
+              bindings["birds"] = () => {
+                return {
+                  create: (birds) => setBirds(birds),
+                  update: (birds) => setBirds(birds),
+                  delete: () => setBirds([]),
+                };
+              };
+
+              // Update State
+              run((state) => state);
+
+              return () => {
+                delete bindings["birds[*]"];
+              };
+            }, []);
+
+            return html`<div>
+              ${birds.map((bird) => html`<div>${bird}</div>`)}
+            </div>`;
+          };
+
+          const Buttons = () => {
+            return html`<div>
+              <button onClick=${addBird}>Add</button>
+              <button onClick=${removeBird}>Delete</button>
+            </div>`;
+          };
+
+          const App = () => {
+            return html`<div><${List} /><${Buttons} /></div>`;
+          };
+
+          ReactDOM.render(html`<${App} />`, document.getElementById("react"));
+        </script>
+        <pre><code id="react-pre"></code></pre>
+        <script>
+          document.getElementById("react-pre").textContent =
+            document.getElementById("react-script").textContent;
+        </script>
+      </div>
+    </div>
+  </body>
+</html>
