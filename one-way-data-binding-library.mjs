@@ -17,21 +17,23 @@ export default (bindings) => {
       matchedBy.forEach((match) => {
         // No binding exists for this key; bind and call create method
         if (!(key in bound)) {
-          nextBound[key] = { methods: bindings[match](), data };
-          if (nextBound[key].methods.create) {
-            nextBound[key].methods.create(data, state);
+          bound[key] = { methods: bindings[match](), data };
+          if (bound[key].methods.create) {
+            bound[key].methods.create(data, state);
           }
         }
         // Binding exists and data reference has changed; call update method
         else if (bound[key].methods.update && data !== bound[key].data) {
-          nextBound[key] = { methods: bound[key].methods, data };
-          nextBound[key].methods.update(data, state);
+          bound[key].methods.update(data, state);
         }
+
+        nextBound[key] = { methods: bound[key].methods, data };
       });
     });
 
     Object.keys(bound).forEach((key) => {
       if (!(key in nextBound) || nextBound[key] === undefined) {
+        console.log("delete", key);
         bound[key].methods.delete?.(state);
       }
     });

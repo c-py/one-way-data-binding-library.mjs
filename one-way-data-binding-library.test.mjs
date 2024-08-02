@@ -254,4 +254,23 @@ describe("one-way-data-binding-library", () => {
 
     expect(runs).toBe(1);
   });
+
+  it("runs a single delete on popping a list", () => {
+    let runs = 0;
+
+    const foo = () => ({
+      delete: () => runs++,
+    });
+
+    const run = bind({
+      "state.foo[*]": foo,
+    });
+
+    run(() => ({ state: { foo: [1, 2, 3] } }));
+    run((state) => {
+      state.state.foo.pop();
+    });
+
+    expect(runs).toBe(1);
+  });
 });
